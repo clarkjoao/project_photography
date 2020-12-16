@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { AlbunsService } from './albuns.service';
-import Album from './albuns.dto'
+import { Album } from './schemas/album.schemas';
 
 @Controller('albuns')
 export class AlbunsController {
