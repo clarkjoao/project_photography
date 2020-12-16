@@ -6,10 +6,10 @@ import { Album,AlbumDocument } from './schemas/album.schemas';
 @Injectable()
 export class AlbunsService {
     constructor(
-    @InjectModel(Album.name) private readonly userModel: Model<AlbumDocument>,
+    @InjectModel(Album.name) private readonly albumModel: Model<AlbumDocument>,
     ) {}
     async create(doc: Album) {
-        const result = await new this.userModel(doc).save();
+        const result = await new this.albumModel(doc).save();
         return result.id;
     }
 
