@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, ObjectId } from 'mongoose';
+import { Document, ObjectId,Types} from 'mongoose';
+import { Album } from 'src/albuns/schemas/album.schemas';
+
 
 export type ImageDocument = Image & Document;
 
@@ -11,11 +13,8 @@ export class Image {
   @Prop()
   link: string;
   
-  @Prop({ref:'Album', required:true})
-  album: ObjectId;
-
-  @Prop()
-  password: string;
+  @Prop({type: Types.ObjectId, ref: Album.name, required:true})
+  album: Album;
 
   @Prop({default: Date.now})
   createdAt: Date;
