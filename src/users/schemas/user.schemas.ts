@@ -13,6 +13,12 @@ export class User {
 
   @Prop()
   password: string;
+
+  @Prop({default: Date.now})
+  createdAt: Date;
+  
+  @Prop({default: Date.now})
+  updateAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

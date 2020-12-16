@@ -16,12 +16,12 @@ export class UsersController {
         return this.service.create(user);
     }
 
-    @Put('update')
+    @Put()
     update(@Body() user: User) {
         return this.service.update(user);
     }
 
-    @Delete('delete/:id')
+    @Delete(':id')
     remove(@Param() params) {
         return this.service.remove(params.id);
     }
