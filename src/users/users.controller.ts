@@ -6,11 +6,12 @@ import { UsersService } from './users.service';
 export class UsersController {
     constructor(private service: UsersService) {
     }
+    
     @Get('findById/:id')
     get(@Param() params) {
         return this.service.findById(params.id);
     }
-
+    
     @Post()
     create(@Body() user: User) {
         return this.service.create(user);

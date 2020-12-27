@@ -14,6 +14,10 @@ export class UsersService {
         return result.id;
     }
 
+    async findByEmail(email: string): Promise<User> {
+        const user = await this.userModel.findOne({email}).exec()
+        return user;
+    }
     async findById(id: number) {
     // ...
     }
