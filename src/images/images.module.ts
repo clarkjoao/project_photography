@@ -8,6 +8,7 @@ import { ImagesService } from './images.service';
 import { Image,ImageSchema } from './schemas/image.schemas';
 import { ImagesConsumer } from './images-consumer';
 import { ImagesConvertService } from 'src/shared/services/images-convert/images-convert.service';
+import { AlbunsModule } from 'src/albuns/albuns.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { ImagesConvertService } from 'src/shared/services/images-convert/images-
     BullModule.registerQueue({
       name: 'Images',
     }),
-    ImagesConvertService
+    ImagesConvertService,
+    AlbunsModule
   ],
   controllers: [ImagesController],
   providers: [ImagesService, ImagesConsumer,ImagesConvertService]

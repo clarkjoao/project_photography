@@ -6,6 +6,7 @@ import { Album,AlbumSchema } from './schemas/album.schemas';
 @Module({
   imports: [MongooseModule.forFeature([{ name: Album.name, schema: AlbumSchema }])],
   controllers: [AlbunsController],
-  providers: [AlbunsService]
+  providers: [AlbunsService],
+  exports: [AlbunsService]
 })
 export class AlbunsModule {}

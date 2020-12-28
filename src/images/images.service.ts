@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Image, ImageDocument } from './schemas/image.schemas';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
+import { ImagesDTO } from './dtos/images.dto'
 
 @Injectable()
 export class ImagesService {
@@ -11,16 +12,18 @@ export class ImagesService {
     @InjectModel(Image.name) private readonly imageModel: Model<ImageDocument>,
     @InjectQueue('Images') private imagesQueue: Queue
     ) {}
-    async create(doc: Image, file: File) {
+    async create(doc: ImagesDTO, file: File) {
         const result = await new this.imageModel(doc).save();
         await this.imagesQueue.add({image: file, id:result.id})
         return result.id;
     }
 
-    async findById(id: number){
+    async findById(id: string){
+        const image = await this.imageModel.findOne({_id:id}).exec();
+        return image
     }
 
-    async update(image: Image) {
+    async update(image: ImagesDTO) {
     // ...
     }
 

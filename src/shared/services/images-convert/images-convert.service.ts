@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class ImagesConvertService {
 
-    public async imageTrate(image):Promise<any>{
+    public async imageConvert(image):Promise<any>{
         const file = await Jimp.read(Buffer.from(image.buffer, 'base64'))
         .then(async image => {
         //   const background = await Jimp.read('https://url/background.png');
@@ -27,12 +27,7 @@ export class ImagesConvertService {
     }
 
     public async uploadS3(id, image):Promise<any>{
-      let s3 = new AWS.S3({
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        // region: process.env.AWS_REGION
-      });
-
+      
       const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: `cat.jpg`,
@@ -40,9 +35,12 @@ export class ImagesConvertService {
         ContentType: image.mimetype,
         ACL: 'public-read'
       };
-     
+      
+      let s3 = new AWS.S3({
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      });
 
-        // Uploading files to the bucket
       const photo = await s3.upload(params, function(err, data) {
             if (err) {
                 console.log('err',err)

@@ -6,7 +6,7 @@ import { ImagesConvertService } from 'src/shared/services/images-convert/images-
 @Processor('Images')
 export class ImagesConsumer {
   constructor(
-    private imageConvertService: ImagesConvertService
+    private imageConvertService: ImagesConvertService,
   ){
   }
   private readonly logger = new Logger(ImagesConsumer.name);
@@ -14,7 +14,7 @@ export class ImagesConsumer {
   async processImages(job: Job) {
     this.logger.debug('Start transcoding...');
     const {id, image} = job.data
-    const imageResult = await this.imageConvertService.imageTrate(image)
+    const imageResult = await this.imageConvertService.imageConvert(image)
     // const upload = await this.imageConvertService.uploadS3(id, imageResult)
     return {};
   }

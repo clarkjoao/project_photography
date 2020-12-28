@@ -13,8 +13,9 @@ export class AlbunsService {
         return result.id;
     }
 
-    async findById(id: number) {
-    // ...
+    async findById(id: string) {
+        const album = await this.albumModel.findOne({_id:id}).exec();
+        return album;
     }
 
     async update(user: Album) {
