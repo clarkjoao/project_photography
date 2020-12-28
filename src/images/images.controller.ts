@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put,UploadedFile,UseInterceptors } from '@nestjs/common';
+import {FileInterceptor} from '@nestjs/platform-express'
 import { ImagesService } from './images.service';
 import { Image } from './schemas/image.schemas';
 
@@ -13,8 +14,9 @@ export class ImagesController {
     }
 
     @Post()
-    create(@Body() image: Image) {
-        return this.service.create(image);
+    @UseInterceptors(FileInterceptor('file'))
+    create(@Body() image: Image, @UploadedFile() file) {
+        return this.service.create(image, file);
     }
 
     @Put()

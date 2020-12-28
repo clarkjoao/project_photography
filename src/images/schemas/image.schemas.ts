@@ -10,11 +10,14 @@ export class Image {
   @Prop({required:true})
   name: string;
 
-  @Prop({required:true})
+  @Prop({default:''})
   link: string;
   
   @Prop({type: Types.ObjectId, ref: Album.name, required:true})
   album: Album;
+
+  @Prop({default:false})
+  isPublished: boolean;
 
   @Prop({default: Date.now})
   createdAt: Date;
