@@ -2,9 +2,6 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BullModule } from '@nestjs/bull';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-
 import { UsersModule } from './users/users.module';
 
 import { ImagesModule } from './images/images.module';
@@ -27,7 +24,6 @@ import { AuthModule } from './auth/auth.module';
   ImagesModule,
   AlbunsModule, 
   AuthModule],
-  controllers: [AppController],
-  providers: [AppService, ImagesConvertService],
+  providers: [ImagesConvertService],
 })
 export class AppModule {}

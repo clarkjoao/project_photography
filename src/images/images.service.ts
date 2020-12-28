@@ -11,9 +11,9 @@ export class ImagesService {
     @InjectModel(Image.name) private readonly imageModel: Model<ImageDocument>,
     @InjectQueue('Images') private imagesQueue: Queue
     ) {}
-    async create(doc: Image) {
-        const quee = await this.imagesQueue.add({image:'teste'})
+    async create(doc: Image, file: File) {
         const result = await new this.imageModel(doc).save();
+        await this.imagesQueue.add({image: file, id:result.id})
         return result.id;
     }
 

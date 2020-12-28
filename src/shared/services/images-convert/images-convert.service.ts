@@ -17,9 +17,9 @@ export class ImagesConvertService {
         })
         .catch(err => {
           console.log(err)
+          return err;
         });
-
+        console.log('end',file)
         return file;
-
     }
 }
