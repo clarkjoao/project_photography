@@ -2,20 +2,21 @@ import { Processor,OnQueueActive, OnQueueCompleted, Process, OnQueueProgress, On
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { ImagesConvertService } from 'src/shared/services/images-convert/images-convert.service';
+import { ImagesDTO, ImageQueeDTO } from './dtos/images.dto'
 
 @Processor('Images')
 export class ImagesConsumer {
   constructor(
     private imageConvertService: ImagesConvertService,
-  ){
-  }
+  ){}
   private readonly logger = new Logger(ImagesConsumer.name);
   @Process()
   async processImages(job: Job) {
     this.logger.debug('Start transcoding...');
-    const {id, image} = job.data
-    const imageResult = await this.imageConvertService.imageConvert(image)
-    // const upload = await this.imageConvertService.uploadS3(id, imageResult)
+    const newFile = await this.imageConvertService.imageConvert(job.data.file)
+    job.data.file = newFile
+    const url = await this.imageConvertService.uploadS3(job.data)
+    console.log(url)
     return {};
   }
 

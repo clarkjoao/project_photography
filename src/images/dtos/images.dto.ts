@@ -1,4 +1,4 @@
-import { IsBoolean, IsMongoId, IsString } from "class-validator";
+import { IsBoolean, IsEmpty, IsMongoId, IsString } from "class-validator";
 
 export class ImagesDTO{
     @IsString()
@@ -9,6 +9,7 @@ export class ImagesDTO{
     name: string;
     
     @IsString()
+    @IsEmpty()
     link: string;
 
     @IsString()
@@ -17,4 +18,17 @@ export class ImagesDTO{
 
     @IsBoolean()
     isPublished: boolean;
+}
+
+export class ImageQueeDTO{
+    
+    @IsString()
+    @IsMongoId()
+    albumID: string;
+    
+    @IsString()
+    @IsMongoId()
+    imageID: string;
+    
+    file;
 }

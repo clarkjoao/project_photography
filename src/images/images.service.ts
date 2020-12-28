@@ -1,21 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Image, ImageDocument } from './schemas/image.schemas';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
-import { ImagesDTO } from './dtos/images.dto'
+import { ImagesDTO, ImageQueeDTO } from './dtos/images.dto'
+import { AlbunsService } from 'src/albuns/albuns.service';
 
 @Injectable()
 export class ImagesService {
     constructor(
     @InjectModel(Image.name) private readonly imageModel: Model<ImageDocument>,
-    @InjectQueue('Images') private imagesQueue: Queue
+    @InjectQueue('Images') private imagesQueue: Queue,
+    private albunsService: AlbunsService,
     ) {}
-    async create(doc: ImagesDTO, file: File) {
-        const result = await new this.imageModel(doc).save();
-        await this.imagesQueue.add({image: file, id:result.id})
-        return result.id;
+    async create(image: ImagesDTO, file: Buffer) {
+        
+        const album = await this.albunsService.findById(image.album);
+
+        if(!album){
+            throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
+        }
+
+        const { id } = await new this.imageModel(image).save();
+
+        const imageQuee: ImageQueeDTO = {
+            albumID: album.id,
+            imageID: id,
+            file,
+
+        }
+        await this.imagesQueue.add(imageQuee)
+
+        return id;
     }
 
     async findById(id: string){
