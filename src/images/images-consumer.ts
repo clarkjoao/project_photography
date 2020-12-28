@@ -13,24 +13,25 @@ export class ImagesConsumer {
   @Process()
   async processImages(job: Job) {
     this.logger.debug('Start transcoding...');
-    const {image} = job.data
-    const result = await this.imageConvertService.imageTrate(image)
-    return result;
+    const {id, image} = job.data
+    const imageResult = await this.imageConvertService.imageTrate(image)
+    // const upload = await this.imageConvertService.uploadS3(id, imageResult)
+    return {};
   }
 
   @OnQueueCompleted()
   onCompleted(job: Job){
-    this.logger.log(`Completed job ${job.id} of type ${job.name} with data ${job.data}...`,);
+    this.logger.log(`Completed job ${job.id} of type ${job.name} with data ${job.data}...`);
   }
 
   @OnQueueProgress()
   onProgress(job: Job){
-    this.logger.warn(`Progress on job ${job.id} of type ${job.name} with data ${job.data}...`,);
+    this.logger.warn(`Progress on job ${job.id} of type ${job.name} with data ${job.data}...`);
   }
 
   @OnQueueFailed()
   onFailed(job: Job){
-    this.logger.error(`Error on job ${job.id} of type ${job.name} with data ${job.data}...`,);
+    this.logger.error(job);
   }
   @OnQueueActive()
   onActive(job: Job) {

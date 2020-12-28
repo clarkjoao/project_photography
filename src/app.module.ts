@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BullModule } from '@nestjs/bull';
+import { ConfigModule } from '@nestjs/config';
 
 import { UsersModule } from './users/users.module';
 
@@ -13,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+  ConfigModule.forRoot(),
   MongooseModule.forRoot('mongodb+srv://db_user:ZGgPHF5gWxN6lKBW@anaphotos.uonq9.mongodb.net/db_user?retryWrites=true&w=majority'),
   BullModule.forRoot({
     redis: {
