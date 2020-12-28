@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, ObjectId,Types} from 'mongoose';
+import { Document, Types} from 'mongoose';
 import { Album } from 'src/albuns/schemas/album.schemas';
 
 

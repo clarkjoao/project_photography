@@ -7,7 +7,7 @@ export class UsersController {
     constructor(private service: UsersService) {
     }
     
-    @Get('findById/:id')
+    @Get('/:id')
     get(@Param() params) {
         return this.service.findById(params.id);
     }
@@ -17,12 +17,12 @@ export class UsersController {
         return this.service.create(user);
     }
 
-    @Put()
+    @Put('/:id')
     update(@Body() user: User) {
         return this.service.update(user);
     }
 
-    @Delete(':id')
+    @Delete('/:id')
     remove(@Param() params) {
         return this.service.remove(params.id);
     }

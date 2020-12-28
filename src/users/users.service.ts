@@ -21,7 +21,9 @@ export class UsersService {
         return user;
     }
     async findById(id: number) {
-    // ...
+        const user = await this.userModel.findOne({_id:id}).exec()
+        const {name, email} = user
+        return {id, name, email};
     }
 
     async update(user: User) {
