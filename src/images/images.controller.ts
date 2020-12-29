@@ -19,7 +19,8 @@ export class ImagesController {
     }
 
     @Put()
-    update(@Body() image: ImagesDTO) {
+    @UseInterceptors(FileInterceptor('file'))
+    update(@Body() image: ImagesDTO, @UploadedFile() file) {
         return this.service.update(image);
     }
 

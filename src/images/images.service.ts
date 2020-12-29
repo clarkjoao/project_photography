@@ -41,7 +41,11 @@ export class ImagesService {
     }
 
     async update(image: ImagesDTO) {
-    // ...
+        const imageUpdated = await this.imageModel.findOneAndUpdate({_id: image.id}, image,{new: true}).exec();
+        if (!imageUpdated) {
+            throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
+        }
+        return imageUpdated;
     }
 
     async remove(image: Image) {

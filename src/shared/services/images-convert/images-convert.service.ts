@@ -7,7 +7,6 @@ import { ImagesDTO, ImageQueeDTO } from '../../../images/dtos/images.dto'
 export class ImagesConvertService {
 
     public async imageConvert(file):Promise<any>{
-        console.log(file)
         const newBuffer = await Jimp.read(Buffer.from(file.buffer, 'base64'))
         .then(async image => {
         //   const background = await Jimp.read('https://url/background.png');
@@ -29,8 +28,10 @@ export class ImagesConvertService {
         return file;
     }
 
-    public async uploadS3(data:ImageQueeDTO):Promise<any>{
+    public async uploadS3(data: ImageQueeDTO):Promise<any>{
+      
       const fileType = data.file.originalname.split('.')[1]
+
       const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: `${data.albumID}/${data.imageID}.${fileType}`,
@@ -38,13 +39,13 @@ export class ImagesConvertService {
         ContentType: data.file.mimetype,
         ACL: 'public-read'
       };
-      
-      let s3 = new AWS.S3({
+
+      const credentials = {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      });
-
-      const photo = await s3.upload(params, function(err, data) {
+      }
+      
+      new AWS.S3(credentials).upload(params, function(err, data) {
             if (err) {
                 console.log('err',err)
                 return err

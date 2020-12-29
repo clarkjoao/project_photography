@@ -3,21 +3,21 @@ import { IsBoolean, IsEmpty, IsMongoId, IsString } from "class-validator";
 export class ImagesDTO{
     @IsString()
     @IsMongoId()
-    _id: string;
+    id: string;
     
     @IsString()
-    name: string;
+    name?: string;
     
     @IsString()
     @IsEmpty()
-    link: string;
+    link?: string;
 
     @IsString()
     @IsMongoId()
-    album: string;
+    album?: string;
 
     @IsBoolean()
-    isPublished: boolean;
+    isPublished?: boolean;
 }
 
 export class ImageQueeDTO{

@@ -7,14 +7,14 @@ export type ImageDocument = Image & Document;
 
 @Schema()
 export class Image {
-  @Prop({required:true})
+  @Prop({default:''})
   name: string;
 
   @Prop({default:''})
   link: string;
   
   @Prop({type: Types.ObjectId, ref: Album.name, required:true})
-  album: Album;
+  album: string;
 
   @Prop({default:false})
   isPublished: boolean;
