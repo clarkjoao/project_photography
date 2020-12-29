@@ -14,14 +14,14 @@ export class ImagesController {
 
     @Post()
     @UseInterceptors(FileInterceptor('file'))
-    createOne(@Body() image: ImagesDTO, @UploadedFile() file) {
+    createOne(@Body() image: ImagesDTO, @UploadedFile() file: Express.Multer.File) {
         return this.service.create(image, file);
     }
 
     @Post('upload')
     @UseInterceptors(FilesInterceptor('files'))
-    uploadFile(@Body() image: ImagesDTO, @UploadedFiles() files) {
-        files.map(async(file: Buffer) => this.service.create(image, file))
+    uploadFile(@Body() image: ImagesDTO, @UploadedFiles() files: Express.Multer.File[]) {
+        files.map(async(file:Express.Multer.File) => this.service.create(image, file))
         return;
     }
     

@@ -6,6 +6,7 @@ import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { ImagesDTO, ImageQueeDTO } from './dtos/images.dto'
 import { AlbunsService } from 'src/albuns/albuns.service';
+import { Multer } from 'multer';
 
 @Injectable()
 export class ImagesService {
@@ -14,7 +15,7 @@ export class ImagesService {
     @InjectQueue('Images') private imagesQueue: Queue,
     private albunsService: AlbunsService,
     ) {}
-    async create(image: ImagesDTO, file: Buffer) {
+    async create(image: ImagesDTO, file: Express.Multer.File) {
         
         const album = await this.albunsService.findById(image.album);
 
@@ -28,9 +29,9 @@ export class ImagesService {
             albumID: album.id,
             imageID: id,
             file,
-
         }
-        await this.imagesQueue.add(imageQuee)
+
+        await this.imagesQueue.add('create', imageQuee)
 
         return id;
     }
@@ -48,7 +49,19 @@ export class ImagesService {
         return imageUpdated;
     }
 
-    async remove(image: Image) {
-    // ...
+    async remove(id: string) {
+        const imageDeleted = await this.imageModel.findOneAndRemove({_id: id}).exec();
+
+        if (!imageDeleted) {
+            throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
+        }
+        const imageQuee: ImageQueeDTO = {
+            albumID: imageDeleted.id,
+            imageID: imageDeleted.album,
+        }
+
+        await this.imagesQueue.add('delete',imageQuee)
+        
+        return id;
     }
 }

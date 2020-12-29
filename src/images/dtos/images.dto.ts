@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmpty, IsMongoId, IsString } from "class-validator";
+import { IsBoolean, IsMongoId, IsString } from "class-validator";
 
 export class ImagesDTO{
     @IsString()
@@ -9,7 +9,6 @@ export class ImagesDTO{
     name?: string;
     
     @IsString()
-    @IsEmpty()
     link?: string;
 
     @IsString()
@@ -29,6 +28,6 @@ export class ImageQueeDTO{
     @IsString()
     @IsMongoId()
     imageID: string;
-    
-    file;
+
+    file?: Express.Multer.File;
 }

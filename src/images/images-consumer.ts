@@ -12,19 +12,31 @@ export class ImagesConsumer {
     private imagesService: ImagesService,
   ){}
   private readonly logger = new Logger(ImagesConsumer.name);
-  @Process()
+
+  @Process('create')
   async processImages(job: Job) {
     const newFile = await this.imageConvertService.imageConvert(job.data.file)
+
     job.data.file = newFile
-    const url = await this.imageConvertService.uploadS3(job.data)
+    const url = await this.imageConvertService.imageUploadS3(job.data)
+    
     const image: ImagesDTO = {
       id: job.data.imageID,
       link: url,
       isPublished: true
     }
+    
     this.imagesService.update(image)
+    
     return {};
   }
+
+  @Process('delete')
+  async transcode(job: Job) 
+  { 
+    this.imageConvertService.imageDeleteS3(job.data)
+  }
+
 
   @OnQueueCompleted()
   onCompleted(job: Job){
