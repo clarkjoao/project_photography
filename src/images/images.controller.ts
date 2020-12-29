@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put,UploadedFile,UseInterceptors } from '@nestjs/common';
-import {FileInterceptor} from '@nestjs/platform-express'
+import { Body, Controller, Delete, Get, Param, Post, Put,UploadedFile,UploadedFiles,UseInterceptors } from '@nestjs/common';
+import {FileInterceptor, FilesInterceptor} from '@nestjs/platform-express'
 import { ImagesService } from './images.service';
 import { ImagesDTO } from './dtos/images.dto'
 
@@ -14,10 +14,17 @@ export class ImagesController {
 
     @Post()
     @UseInterceptors(FileInterceptor('file'))
-    create(@Body() image: ImagesDTO, @UploadedFile() file) {
+    createOne(@Body() image: ImagesDTO, @UploadedFile() file) {
         return this.service.create(image, file);
     }
 
+    @Post('upload')
+    @UseInterceptors(FilesInterceptor('files'))
+    uploadFile(@Body() image: ImagesDTO, @UploadedFiles() files) {
+        files.map(async(file: Buffer) => this.service.create(image, file))
+        return;
+    }
+    
     @Put()
     @UseInterceptors(FileInterceptor('file'))
     update(@Body() image: ImagesDTO, @UploadedFile() file) {

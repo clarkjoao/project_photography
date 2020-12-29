@@ -15,6 +15,10 @@ import { AlbunsModule } from 'src/albuns/albuns.module';
     MongooseModule.forFeature([{ name: Image.name, schema: ImageSchema }]),
     BullModule.registerQueue({
       name: 'Images',
+      limiter:{
+        max: parseInt(process.env.QUEE_RATELIMIT)|| 5,
+        duration: parseInt(process.env.QUEE_TIMEOUT)|| 10000,
+      }
     }),
     ImagesConvertService,
     AlbunsModule
