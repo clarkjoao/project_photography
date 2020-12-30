@@ -34,28 +34,28 @@ export class ImagesConsumer {
   @Process('delete')
   async transcode(job: Job) 
   { 
-    this.imageConvertService.imageDeleteS3(job.data)
+    await this.imageConvertService.imageDeleteS3(job.data)
   }
 
 
   @OnQueueCompleted()
   onCompleted(job: Job){
-    this.logger.log(`Completed job ${job.id} of type ${job.name} with data ${job.data}...`);
+    this.logger.debug(`Completed job ${job.id} of type ${job.name} with id ${job.data.imageID}`);
   }
 
   @OnQueueProgress()
   onProgress(job: Job){
-    this.logger.warn(`Progress on job ${job.id} of type ${job.name} with data ${job.data}...`);
+    this.logger.warn(`Progress on job ${job.id} of type ${job.name} with id ${job.data.imageID}`);
   }
 
   @OnQueueFailed()
   onFailed(job: Job){
-    this.logger.error(job);
+    this.logger.error(`Error on job ${job.id} of type ${job.name} with id ${job.data.imageID}`);
   }
   @OnQueueActive()
   onActive(job: Job) {
-    console.log(
-      `Processing job ${job.id} of type ${job.name} with data ${job.data}...`,
+    this.logger.debug(
+      `Processing job ${job.id} of type ${job.name} with id ${job.data.imageID}`,
     );
   }
 }

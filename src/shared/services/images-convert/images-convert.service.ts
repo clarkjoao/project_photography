@@ -48,10 +48,9 @@ export class ImagesConvertService {
       
       new AWS.S3(credentials).upload(params, function(err, data) {
             if (err) {
-                console.log('err',err)
+                console.error('err',err)
                 return err
             }
-            console.log(`File uploaded successfully. ${data.Location}`);
             return data
         });
 
@@ -74,10 +73,9 @@ export class ImagesConvertService {
       return new Promise(()=>{
           return new AWS.S3(credentials).deleteObject(params, function(err, data) {
             if (err) {
-                console.log('err',err)
+                console.error('err',err)
                 return err
             }
-            console.log(`File deleted successfully.`);
             return data
         });
       })
