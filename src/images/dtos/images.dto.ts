@@ -18,16 +18,3 @@ export class ImagesDTO{
     @IsBoolean()
     isPublished?: boolean;
 }
-
-export class ImageQueeDTO{
-    
-    @IsString()
-    @IsMongoId()
-    albumID: string;
-    
-    @IsString()
-    @IsMongoId()
-    imageID: string;
-
-    file?: Express.Multer.File;
-}
