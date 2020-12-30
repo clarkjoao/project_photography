@@ -1,28 +1,74 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Album,AlbumDocument } from './schemas/album.schemas';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
+import { Album, AlbumDocument } from './schemas/album.schemas';
+import { AlbunsDTO } from './dtos/albuns.dto'
+import { UploadQueeDTO } from 'src/shared/dtos/uploadquee.dto'
 
 @Injectable()
 export class AlbunsService {
     constructor(
     @InjectModel(Album.name) private readonly albumModel: Model<AlbumDocument>,
+    @InjectQueue('Albuns') private albunsQueue: Queue,
     ) {}
-    async create(doc: Album) {
-        const result = await new this.albumModel(doc).save();
-        return result.id;
+    async create(album: AlbunsDTO, file: Express.Multer.File) {
+        console.log(file)
+        if(!file){
+            throw new HttpException('Missing File', HttpStatus.FORBIDDEN);
+        }
+
+        const { id } = await new this.albumModel(album).save();
+
+        const imageQuee: UploadQueeDTO = {
+            albumID: id,
+            imageID: id,
+            file,
+        }
+
+        await this.albunsQueue.add('create', imageQuee)
+
+        return id;
     }
 
     async findById(id: string) {
         const album = await this.albumModel.findOne({_id:id}).exec();
+
+        if (!album) {
+            throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
+        }
+
         return album;
     }
 
-    async update(user: Album) {
-    // ...
+    async update(album: AlbunsDTO) {
+        const albumUpdated = await this.albumModel.findOneAndUpdate({_id: album.id}, album,{new: true}).exec();
+
+        if (!albumUpdated) {
+            throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
+        }
+
+        return albumUpdated;
     }
 
-    async remove(user: Album) {
-    // ...
+    async remove(id: string) {
+        const albumDeleted = await this.albumModel.findOneAndRemove({_id: id}).exec();
+
+        if (!albumDeleted) {
+            throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
         }
+
+        if(albumDeleted.link){
+
+            const albumQuee: UploadQueeDTO = {
+                albumID: albumDeleted.id,
+                imageID: albumDeleted.id,
+            }
+    
+            await this.albunsQueue.add('delete', albumQuee)
+        }
+        
+        return id;
+    }
 }

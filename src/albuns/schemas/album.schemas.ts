@@ -5,19 +5,19 @@ export type AlbumDocument = Album & Document;
 
 @Schema()
 export class Album {
-  @Prop({required:true})
+  @Prop({default:''})
   name: string;
   
-  @Prop({required:true})
+  @Prop({default:''})
   location: string;
 
-  @Prop({required:true})
-  coverLink: string;
+  @Prop({default:''})
+  link: string;
 
-  @Prop({required:true})
+  @Prop({default:''})
   date: Date;
   
-  @Prop({required:true})
+  @Prop({default: 0})
   photoCounter: number;
   
   @Prop({default: Date.now})

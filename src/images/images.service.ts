@@ -4,9 +4,9 @@ import { Model } from 'mongoose';
 import { Image, ImageDocument } from './schemas/image.schemas';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
-import { ImagesDTO, ImageQueeDTO } from './dtos/images.dto'
+import { ImagesDTO } from './dtos/images.dto'
 import { AlbunsService } from 'src/albuns/albuns.service';
-import { Multer } from 'multer';
+import { UploadQueeDTO } from 'src/shared/dtos/uploadquee.dto'
 
 @Injectable()
 export class ImagesService {
@@ -17,6 +17,10 @@ export class ImagesService {
     ) {}
     async create(image: ImagesDTO, file: Express.Multer.File) {
         
+        if(!file){
+            throw new HttpException('Missing File', HttpStatus.FORBIDDEN);
+        }
+
         const album = await this.albunsService.findById(image.album);
 
         if(!album){
@@ -25,7 +29,7 @@ export class ImagesService {
 
         const { id } = await new this.imageModel(image).save();
 
-        const imageQuee: ImageQueeDTO = {
+        const imageQuee: UploadQueeDTO = {
             albumID: album.id,
             imageID: id,
             file,
@@ -38,11 +42,16 @@ export class ImagesService {
 
     async findById(id: string){
         const image = await this.imageModel.findOne({_id:id}).exec();
+
+        if(!image){
+            throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
+        }
         return image
     }
 
     async update(image: ImagesDTO) {
         const imageUpdated = await this.imageModel.findOneAndUpdate({_id: image.id}, image,{new: true}).exec();
+
         if (!imageUpdated) {
             throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
         }
@@ -55,12 +64,16 @@ export class ImagesService {
         if (!imageDeleted) {
             throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
         }
-        const imageQuee: ImageQueeDTO = {
-            albumID: imageDeleted.id,
-            imageID: imageDeleted.album,
-        }
 
-        await this.imagesQueue.add('delete',imageQuee)
+        if(imageDeleted.link){
+
+            const imageQuee: UploadQueeDTO = {
+                albumID: imageDeleted.id,
+                imageID: imageDeleted.album,
+            }
+    
+            await this.imagesQueue.add('delete',imageQuee)
+        }
         
         return id;
     }

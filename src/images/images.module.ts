@@ -24,6 +24,6 @@ import { AlbunsModule } from 'src/albuns/albuns.module';
     AlbunsModule
   ],
   controllers: [ImagesController],
-  providers: [ImagesService, ImagesConsumer,ImagesConvertService]
+  providers: [ImagesService, ImagesConsumer, ImagesConvertService]
 })
 export class ImagesModule {}

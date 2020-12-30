@@ -2,31 +2,28 @@ import { Processor,OnQueueActive, OnQueueCompleted, Process, OnQueueProgress, On
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { ImagesConvertService } from 'src/shared/services/images-convert/images-convert.service';
-import { ImagesDTO } from './dtos/images.dto'
-import { ImagesService } from './images.service';
+import { AlbunsService } from './albuns.service';
+import { AlbunsDTO } from './dtos/albuns.dto'
 
-@Processor('Images')
-export class ImagesConsumer {
+@Processor('Albuns')
+export class AlbunsConsumer {
   constructor(
     private imageConvertService: ImagesConvertService,
-    private imagesService: ImagesService,
+    private albunsService: AlbunsService
   ){}
-  private readonly logger = new Logger(ImagesConsumer.name);
+  private readonly logger = new Logger(AlbunsConsumer.name);
 
   @Process('create')
   async processImages(job: Job) {
-    const newFile = await this.imageConvertService.imageConvert(job.data.file)
-
-    job.data.file = newFile
+    job.data.file.buffer = Buffer.from(job.data.file.buffer, 'base64')
     const url = await this.imageConvertService.imageUploadS3(job.data)
-    
-    const image: ImagesDTO = {
-      id: job.data.imageID,
+
+    const album: AlbunsDTO = {
+      id: job.data.albumID,
       link: url,
-      isPublished: true
     }
     
-    this.imagesService.update(image)
+    this.albunsService.update(album)
     
     return {};
   }
@@ -34,8 +31,8 @@ export class ImagesConsumer {
   @Process('delete')
   async transcode(job: Job) 
   { 
-    // Fix-me: Validar delete da imagem no s3
-    await this.imageConvertService.imageDeleteS3(job.data)
+    // Fix-me: Implementar delete de todo o bucket s3
+    // await this.imageConvertService.albumDeleteS3(job.data)
   }
 
 
@@ -52,6 +49,8 @@ export class ImagesConsumer {
   @OnQueueFailed()
   onFailed(job: Job){
     this.logger.error(`Error on job ${job.id} of type ${job.name} with id ${job.data.imageID}`);
+    const {data, ...rest} = job
+    console.log(rest)
   }
   @OnQueueActive()
   onActive(job: Job) {

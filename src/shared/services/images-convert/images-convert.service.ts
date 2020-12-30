@@ -1,8 +1,7 @@
 import * as Jimp from 'jimp'
 import * as AWS from 'aws-sdk'
 import { Injectable } from '@nestjs/common';
-import { ImagesDTO, ImageQueeDTO } from '../../../images/dtos/images.dto'
-
+import { UploadQueeDTO } from '../../dtos/uploadquee.dto'
 @Injectable()
 export class ImagesConvertService {
 
@@ -31,8 +30,9 @@ export class ImagesConvertService {
         return file;
     }
 
-    public async imageUploadS3(data: ImageQueeDTO):Promise<any>{
+    public async imageUploadS3(data: UploadQueeDTO):Promise<any>{
 
+      console.log(data.file)
       const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: `${data.albumID}/${data.imageID}.jpeg`,
@@ -51,6 +51,7 @@ export class ImagesConvertService {
                 console.error('err',err)
                 return err
             }
+            console.log(JSON.stringify(data))
             return data
         });
 
@@ -58,7 +59,7 @@ export class ImagesConvertService {
       return url;
     }
 
-    public async imageDeleteS3(data: ImageQueeDTO){
+    public async imageDeleteS3(data: UploadQueeDTO){
       
       const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
