@@ -18,9 +18,9 @@ export class AlbunsController {
         return this.service.create(albuns, file);
     }
 
-    @Put()
-    update(@Body() albuns: AlbunsDTO) {
-        return this.service.update(albuns);
+    @Put(':id')
+    update(@Param() params, @Body() albuns: AlbunsDTO) {
+        return this.service.update(params.id, albuns);
     }
 
     @Delete(':id')

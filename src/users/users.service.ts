@@ -24,17 +24,36 @@ export class UsersService {
     async findByEmail(email: string): Promise<User> {
         const user = await this.userModel.findOne({email}).exec()
         
+        if (!user) {
+            throw new HttpException('User Not found', HttpStatus.NOT_FOUND);
+        }
+
         return user;
     }
 
     async findById(id: string) {
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
         const user = await this.userModel.findOne({_id:id}).exec()
+        
+        if (!user) {
+            throw new HttpException('User Not found', HttpStatus.NOT_FOUND);
+        }
+
         const {name, email} = user
         return {id, name, email};
     }
 
-    async update(user: UserDTO) {
-        const userUpdated = await this.userModel.findOneAndUpdate({_id: user.id}, user,{new: true}).exec();
+    async update(id: string, user: UserDTO) {
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
+        const userUpdated = await this.userModel.findOneAndUpdate({_id: id}, user,{new: true}).exec();
+
         if (!userUpdated) {
             throw new HttpException('User Not found', HttpStatus.NOT_FOUND);
         }
@@ -43,6 +62,11 @@ export class UsersService {
     }
 
     async remove(id: string) {
+
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
         const userDeleted = await this.userModel.findOneAndRemove({_id: id}).exec();
 
         if (!userDeleted) {

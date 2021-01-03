@@ -41,6 +41,11 @@ export class ImagesService {
     }
 
     async findById(id: string){
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
         const image = await this.imageModel.findOne({_id:id}).exec();
 
         if(!image){
@@ -49,8 +54,13 @@ export class ImagesService {
         return image
     }
 
-    async update(image: ImagesDTO) {
-        const imageUpdated = await this.imageModel.findOneAndUpdate({_id: image.id}, image,{new: true}).exec();
+    async update(id: string, image: ImagesDTO) {
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
+        const imageUpdated = await this.imageModel.findOneAndUpdate({_id: id}, image,{new: true}).exec();
 
         if (!imageUpdated) {
             throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
@@ -59,6 +69,11 @@ export class ImagesService {
     }
 
     async remove(id: string) {
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
         const imageDeleted = await this.imageModel.findOneAndRemove({_id: id}).exec();
 
         if (!imageDeleted) {

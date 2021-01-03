@@ -25,9 +25,9 @@ export class ImagesController {
         return;
     }
     
-    @Put()
-    update(@Body() image: ImagesDTO) {
-        return this.service.update(image);
+    @Put(':id')
+    update(@Param() params, @Body() image: ImagesDTO) {
+        return this.service.update(params.id, image);
     }
 
     @Delete(':id')
