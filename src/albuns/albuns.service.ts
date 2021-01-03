@@ -14,7 +14,7 @@ export class AlbunsService {
     @InjectQueue('Albuns') private albunsQueue: Queue,
     ) {}
     async create(album: AlbunsDTO, file: Express.Multer.File) {
-        console.log(file)
+
         if(!file){
             throw new HttpException('Missing File', HttpStatus.FORBIDDEN);
         }

@@ -32,7 +32,6 @@ export class ImagesConvertService {
 
     public async imageUploadS3(data: UploadQueeDTO):Promise<any>{
 
-      console.log(data.file)
       const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: `${data.albumID}/${data.imageID}.jpeg`,
@@ -51,7 +50,6 @@ export class ImagesConvertService {
                 console.error('err',err)
                 return err
             }
-            console.log(JSON.stringify(data))
             return data
         });
 
