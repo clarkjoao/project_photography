@@ -33,6 +33,11 @@ export class AlbunsService {
     }
 
     async findById(id: string) {
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
         const album = await this.albumModel.findOne({_id:id}).exec();
 
         if (!album) {
@@ -42,8 +47,13 @@ export class AlbunsService {
         return album;
     }
 
-    async update(album: AlbunsDTO) {
-        const albumUpdated = await this.albumModel.findOneAndUpdate({_id: album.id}, album,{new: true}).exec();
+    async update(id:string ,album: AlbunsDTO) {
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
+        const albumUpdated = await this.albumModel.findOneAndUpdate({_id: id}, album,{new: true}).exec();
 
         if (!albumUpdated) {
             throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
@@ -53,6 +63,11 @@ export class AlbunsService {
     }
 
     async remove(id: string) {
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
         const albumDeleted = await this.albumModel.findOneAndRemove({_id: id}).exec();
 
         if (!albumDeleted) {

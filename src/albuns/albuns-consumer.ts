@@ -23,7 +23,7 @@ export class AlbunsConsumer {
       link: url,
     }
     
-    this.albunsService.update(album)
+    this.albunsService.update(job.data.albumID, album)
     
     return {};
   }

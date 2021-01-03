@@ -26,7 +26,7 @@ export class ImagesConsumer {
       isPublished: true
     }
     
-    this.imagesService.update(image)
+    this.imagesService.update(job.data.imageID, image)
     
     return {};
   }
@@ -34,7 +34,6 @@ export class ImagesConsumer {
   @Process('delete')
   async transcode(job: Job) 
   { 
-    // Fix-me: Validar delete da imagem no s3
     await this.imageConvertService.imageDeleteS3(job.data)
   }
 
