@@ -75,6 +75,21 @@ export class AlbunsService {
         return albumUpdated;
     }
 
+    async incrasePhotoCount(id: string, photoCounter:number = 1){
+
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
+        const albumUpdated = await this.albumModel.findOneAndUpdate({_id: id}, {$inc:{ photoCounter }},{new: true}).exec();
+
+        if (!albumUpdated) {
+            throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
+        }
+
+        return albumUpdated;
+    }
+
     async remove(id: string) {
         
         if (!id) {
