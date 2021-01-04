@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Query, Post, Put, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express'
 import { AlbunsService } from './albuns.service';
 import { AlbunsDTO } from './dtos/albuns.dto'
@@ -7,9 +7,15 @@ import { AlbunsDTO } from './dtos/albuns.dto'
 export class AlbunsController {
     constructor(private service: AlbunsService) {
     }
+
     @Get(':id')
-    get(@Param() params) {
-        return this.service.findById(params.id);
+    get(@Param('id') id: string) {
+        return this.service.findById(id);
+    }
+    
+    @Get()
+    getAll(@Query('page') page: number) {
+        return this.service.findAll(page);
     }
 
     @Post()
@@ -19,12 +25,12 @@ export class AlbunsController {
     }
 
     @Put(':id')
-    update(@Param() params, @Body() albuns: AlbunsDTO) {
-        return this.service.update(params.id, albuns);
+    update(@Param('id') id: string, @Body() albuns: AlbunsDTO) {
+        return this.service.update(id, albuns);
     }
 
     @Delete(':id')
-    remove(@Param() params) {
-        return this.service.remove(params.id);
+    remove(@Param('id') id: string,) {
+        return this.service.remove(id);
     }
 }

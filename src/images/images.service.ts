@@ -27,17 +27,17 @@ export class ImagesService {
             throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
         }
 
-        const { id } = await new this.imageModel(image).save();
+        const newImage = await new this.imageModel(image).save();
 
         const imageQuee: UploadQueeDTO = {
             albumID: album.id,
-            imageID: id,
+            imageID: newImage.id,
             file,
         }
 
         await this.imagesQueue.add('create', imageQuee)
 
-        return id;
+        return newImage;
     }
 
     async findById(id: string){
@@ -52,6 +52,24 @@ export class ImagesService {
             throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
         }
         return image
+    }
+
+    async findAllByAlbum(id: string, page: number = 0){
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
+        const resultsPerPage = parseInt(process.env.QNT_BY_PAGE)||25;
+
+        const result = this.imageModel.find({ album: id })
+        .sort({ createdAt: "desc" })
+        .limit(resultsPerPage)
+        .skip(resultsPerPage * page)
+        .exec()
+        
+        return result
+
     }
 
     async update(id: string, image: ImagesDTO) {

@@ -7,9 +7,9 @@ export class UsersController {
     constructor(private service: UsersService) {
     }
     
-    @Get('/:id')
-    get(@Param() params) {
-        return this.service.findById(params.id);
+    @Get(':id')
+    get(@Param('id') id: string) {
+        return this.service.findById(id);
     }
     
     @Post()
@@ -18,12 +18,12 @@ export class UsersController {
     }
 
     @Put(':id')
-    update(@Param() params, @Body() user: UserDTO) {
-        return this.service.update(params.id, user);
+    update(@Param('id') id: string, @Body() user: UserDTO) {
+        return this.service.update(id, user);
     }
 
     @Delete(':id')
-    remove(@Param() params) {
-        return this.service.remove(params.id);
+    remove(@Param('id') id: string) {
+        return this.service.remove(id);
     }
 }
