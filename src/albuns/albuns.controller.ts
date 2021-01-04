@@ -25,12 +25,12 @@ export class AlbunsController {
     }
 
     @Put(':id')
-    update(@Param() params, @Body() albuns: AlbunsDTO) {
-        return this.service.update(params.id, albuns);
+    update(@Param('id') id: string, @Body() albuns: AlbunsDTO) {
+        return this.service.update(id, albuns);
     }
 
     @Delete(':id')
-    remove(@Param() params) {
-        return this.service.remove(params.id);
+    remove(@Param('id') id: string,) {
+        return this.service.remove(id);
     }
 }

@@ -8,8 +8,8 @@ export class ImagesController {
     constructor(private service: ImagesService) {
     }
     @Get(':id')
-    get(@Param() params) {
-        return this.service.findById(params.id);
+    get(@Param('id') id: string,) {
+        return this.service.findById(id);
     }
 
     @Get('album/:id')
@@ -31,13 +31,13 @@ export class ImagesController {
     }
     
     @Put(':id')
-    update(@Param() params, @Body() image: ImagesDTO) {
-        return this.service.update(params.id, image);
+    update(@Param('id') id: string, @Body() image: ImagesDTO) {
+        return this.service.update(id, image);
     }
 
     @Delete(':id')
-    remove(@Param() params) {
-        return this.service.remove(params.id);
+    remove(@Param('id') id: string) {
+        return this.service.remove(id);
     }
     
 }
