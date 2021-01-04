@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Query, Post, Put, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
 import { ImagesService } from './images.service';
 import { ImagesDTO } from './dtos/images.dto'
@@ -10,6 +10,11 @@ export class ImagesController {
     @Get(':id')
     get(@Param() params) {
         return this.service.findById(params.id);
+    }
+
+    @Get('album/:id')
+    getAllByAlbum(@Param('id') id:string, @Query('page') page: number) {
+        return this.service.findAllByAlbum(id, page);
     }
 
     @Post()
