@@ -47,6 +47,19 @@ export class AlbunsService {
         return album;
     }
 
+    async findAll(page: number = 0){
+
+        const resultsPerPage = parseInt(process.env.QNT_BY_PAGE)||25;
+
+        const result = this.albumModel.find()
+        .sort({ createdAt: "desc" })
+        .limit(resultsPerPage)
+        .skip(resultsPerPage * page)
+        .exec()
+        
+        return result
+    }
+
     async update(id:string ,album: AlbunsDTO) {
         
         if (!id) {
