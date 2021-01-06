@@ -16,16 +16,20 @@ export class AlbunsConsumer {
   @Process('create')
   async processImages(job: Job) {
     job.data.file.buffer = Buffer.from(job.data.file.buffer, 'base64')
-    const url = await this.imageConvertService.imageUploadS3(job.data)
+    const url = await this.imageConvertService.imageUploadS3(job.data).then((file)=> file).catch((err)=> job.isFailed())
 
     const album: AlbunsDTO = {
       id: job.data.albumID,
       link: url,
     }
+    try{
+      this.albunsService.update(job.data.albumID, album)
+    }catch(e){
+      job.isFailed();
+    }
     
-    this.albunsService.update(job.data.albumID, album)
     
-    return {};
+    return job.isCompleted();
   }
 
   @Process('delete')

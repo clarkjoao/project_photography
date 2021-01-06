@@ -47,8 +47,9 @@ export class ImagesConsumer {
   @Process('delete')
   async transcode(job: Job) 
   { 
-    this.imageConvertService.imageDeleteS3(job.data)
-    this.albunsService.incrasePhotoCount(job.data.albumID, -1)
+    // Fix-me: Implementar delete no s3
+    // this.imageConvertService.imageDeleteS3(job.data)
+    // this.albunsService.incrasePhotoCount(job.data.albumID, -1)
   }
 
 
