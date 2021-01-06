@@ -20,20 +20,28 @@ export class ImagesConsumer {
   async processImages(job: Job) {
 
     const newFile = await this.imageConvertService.imageConvert(job.data.file)
-
+    .then((file)=> file)
+    .catch((e)=> job.isFailed())    
+    
     job.data.file = newFile
+    
     const url = await this.imageConvertService.imageUploadS3(job.data)
+    .then((url)=> url)
+    .catch((e)=> job.isFailed())    
     
     const image: ImagesDTO = {
       id: job.data.imageID,
       link: url,
       isPublished: true
     }
+    try{
+      this.imagesService.update(job.data.imageID, image)
+      this.albunsService.incrasePhotoCount(job.data.albumID, 1)
+    }catch(e){
+      job.isFailed();
+    }
     
-    this.imagesService.update(job.data.imageID, image)
-    this.albunsService.incrasePhotoCount(job.data.albumID, 1)
-    
-    return {};
+    return job.isCompleted();
   }
 
   @Process('delete')
