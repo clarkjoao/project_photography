@@ -101,8 +101,8 @@ export class ImagesService {
         if(imageDeleted.link){
 
             const imageQuee: UploadQueeDTO = {
-                albumID: imageDeleted.id,
-                imageID: imageDeleted.album,
+                imageID: imageDeleted.id,
+                albumID: imageDeleted.album
             }
     
             await this.imagesQueue.add('delete',imageQuee)

@@ -28,7 +28,7 @@ export class ImagesConsumer {
     const url = await this.imageConvertService.imageUploadS3(job.data)
     .then((url)=> url)
     .catch((e)=> job.isFailed())    
-    
+
     const image: ImagesDTO = {
       id: job.data.imageID,
       link: url,
@@ -47,9 +47,17 @@ export class ImagesConsumer {
   @Process('delete')
   async transcode(job: Job) 
   { 
-    // Fix-me: Implementar delete no s3
-    // this.imageConvertService.imageDeleteS3(job.data)
-    // this.albunsService.incrasePhotoCount(job.data.albumID, -1)
+   await this.imageConvertService.imageDeleteS3(job.data)
+    .then(()=>{
+      try{
+        console.log(job.data)
+        this.albunsService.incrasePhotoCount(job.data.albumID, -1)
+      }catch(e){
+        job.isFailed();
+      }
+    }).catch(()=> job.isFailed())
+
+    return job.isCompleted();
   }
 
 

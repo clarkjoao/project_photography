@@ -48,7 +48,7 @@ export class ImagesConvertService {
       
       
      return new Promise((resolve, reject)=>{
-       return  new AWS.S3(credentials).upload(params, function(err, data) {
+       return  new AWS.S3(credentials).upload(params, function(err) {
           if (err) {
             return reject(err)
           }
@@ -70,13 +70,15 @@ export class ImagesConvertService {
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       }
       
-      
-    return new AWS.S3(credentials).deleteObject(params, function(err, data) {
-      if (err) {
-          console.error('err',err)
-          return err
-      }
-      return data
+   
+    return new Promise((resolve,reject)=>{
+      return new AWS.S3(credentials).deleteObject(params, function(err, data) {
+        if (err) {
+            console.error('err',err)
+            return reject(err)
+        }
+        return resolve(data)
+      })
     })
     }
 }
