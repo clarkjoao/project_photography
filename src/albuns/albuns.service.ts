@@ -96,7 +96,7 @@ export class AlbunsService {
             throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
         }
 
-        const albumDeleted = await this.albumModel.findOne({_id: id}).exec();
+        const albumDeleted = await this.albumModel.findOneAndDelete({_id: id}).exec();
 
         if (!albumDeleted) {
             throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
