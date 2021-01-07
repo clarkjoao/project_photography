@@ -35,8 +35,8 @@ export class AlbunsConsumer {
   @Process('delete')
   async transcode(job: Job) 
   { 
-    // Fix-me: Implementar delete de todo o bucket s3
-    // await this.imageConvertService.albumDeleteS3(job.data)
+    const data = await this.imageConvertService.emptyFolders(job.data).then(()=> data).catch(()=> job.isFailed())
+    return job.isCompleted();
   }
 
 

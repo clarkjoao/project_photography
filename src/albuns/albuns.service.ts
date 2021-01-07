@@ -96,21 +96,19 @@ export class AlbunsService {
             throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
         }
 
-        const albumDeleted = await this.albumModel.findOneAndRemove({_id: id}).exec();
+        const albumDeleted = await this.albumModel.findOne({_id: id}).exec();
 
         if (!albumDeleted) {
             throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
         }
 
-        if(albumDeleted.link){
 
-            const albumQuee: UploadQueeDTO = {
-                albumID: albumDeleted.id,
-                imageID: albumDeleted.id,
-            }
-    
-            await this.albunsQueue.add('delete', albumQuee)
+        const albumQuee: UploadQueeDTO = {
+            albumID: albumDeleted.id,
+            imageID: albumDeleted.id,
         }
+
+        await this.albunsQueue.add('delete', albumQuee)
         
         return id;
     }

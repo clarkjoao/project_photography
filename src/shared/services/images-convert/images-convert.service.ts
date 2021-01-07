@@ -81,4 +81,47 @@ export class ImagesConvertService {
       })
     })
     }
+
+    public async emptyFolders(data: UploadQueeDTO){
+
+      var params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Prefix: `${data.albumID}`,
+      };
+
+      var paramsToDelete = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Delete: {Objects:[]}
+      }
+
+      const credentials = {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      }
+
+      const s3 = new AWS.S3(credentials)
+    
+      return new Promise(async (resolve, reject)=>{
+        return s3.listObjects(params, async (err, data) =>{
+          if (err){
+            return reject(err);
+          }
+      
+          if (data.Contents.length == 0){
+            return reject('Not Found')
+          }
+      
+          data.Contents.forEach(function(content) {
+            paramsToDelete.Delete.Objects.push({Key: content.Key});
+          });
+  
+          return s3.deleteObjects(paramsToDelete, function(err, data) {
+            if (err) {
+              return reject(err)
+            }
+            return resolve(data)
+          })
+        });
+      })
+    }
 }
