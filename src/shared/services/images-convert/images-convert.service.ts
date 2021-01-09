@@ -7,27 +7,27 @@ export class ImagesConvertService {
 
     public async imageConvert(file):Promise<any>{
 
-        const newBuffer = await Jimp.read(Buffer.from(file.buffer, 'base64'))
-        .then(async image => {
-        //   const background = await Jimp.read('https://url/background.png');
-          const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
-        //   image.composite(background, 1000, 700);
-          image.write("./upload/after.jpg"); 
-          image
-          .resize(640, Jimp.AUTO)
-          .blur(1)
-          .quality(25)
-          .scale(2, Jimp.RESIZE_BEZIER);
-          
-          image.write("./upload/before.jpg"); 
-          return image.getBufferAsync(Jimp.MIME_JPEG);
+        return new Promise(async(resolver, reject)=>{
+            return await Jimp.read(Buffer.from(file.buffer, 'base64'))
+            .then(async image => {
+            //   const background = await Jimp.read('https://url/background.png');
+              const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+            //   image.composite(background, 1000, 700);
+              image.write("./upload/after.jpg"); 
+              image
+              .resize(640, Jimp.AUTO)
+              .blur(1)
+              .quality(25)
+              .scale(2, Jimp.RESIZE_BEZIER);
+              
+              image.write("./upload/before.jpg"); 
+              file.buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
+              return resolver(file)
+            })
+            .catch(err => {
+              return reject(err)
+            });
         })
-        .catch(err => {
-          return err;
-        });
-
-        file.buffer = newBuffer
-        return file;
     }
 
     public async imageUploadS3(data: UploadQueeDTO):Promise<any>{
@@ -44,17 +44,18 @@ export class ImagesConvertService {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       }
-      
-      new AWS.S3(credentials).upload(params, function(err, data) {
-            if (err) {
-                console.error('err',err)
-                return err
-            }
-            return data
-        });
 
-      const url =`${process.env.AWS_DEFAULT_URL}/${data.albumID}/${data.imageID}.jpeg`
-      return url;
+      
+      
+     return new Promise((resolve, reject)=>{
+       return  new AWS.S3(credentials).upload(params, function(err) {
+          if (err) {
+            return reject(err)
+          }
+          const url =`${process.env.AWS_DEFAULT_URL}/${data.albumID}/${data.imageID}.jpeg`
+          return resolve(url)
+        });
+     })
     }
 
     public async imageDeleteS3(data: UploadQueeDTO){
@@ -69,13 +70,57 @@ export class ImagesConvertService {
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       }
       
-      return new Promise(()=>{
-          return new AWS.S3(credentials).deleteObject(params, function(err, data) {
+   
+    return new Promise((resolve,reject)=>{
+      return new AWS.S3(credentials).deleteObject(params, function(err, data) {
+        if (err) {
+            console.error('err',err)
+            return reject(err)
+        }
+        return resolve(data)
+      })
+    })
+    }
+
+    public async emptyFolders(data: UploadQueeDTO){
+
+      var params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Prefix: `${data.albumID}`,
+      };
+
+      var paramsToDelete = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Delete: {Objects:[]}
+      }
+
+      const credentials = {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      }
+
+      const s3 = new AWS.S3(credentials)
+    
+      return new Promise(async (resolve, reject)=>{
+        return s3.listObjects(params, async (err, data) =>{
+          if (err){
+            return reject(err);
+          }
+      
+          if (data.Contents.length == 0){
+            return reject('Not Found')
+          }
+      
+          data.Contents.forEach(function(content) {
+            paramsToDelete.Delete.Objects.push({Key: content.Key});
+          });
+  
+          return s3.deleteObjects(paramsToDelete, function(err, data) {
             if (err) {
-                console.error('err',err)
-                return err
+              return reject(err)
             }
-            return data
+            return resolve(data)
+          })
         });
       })
     }
