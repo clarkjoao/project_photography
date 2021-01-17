@@ -18,33 +18,37 @@ export class UsersController {
     }
     
     @Get(':id')
-    get(@Param('id') id: string) {
+    async get(@Param('id') id: string): Promise<UserDTO> {
 
         if (!id) {
             throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
         }
 
-        return this.service.findById(id);
+        return await this.service.findById(id);
     }
     
     @Post()
-    create(@Body() user: UserDTO) {
-        return this.service.create(user);
+    async create(@Body() user: UserDTO) {
+        return await this.service.create(user);
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() user: UserDTO) {
+    async update(@Param('id') id: string, @Body() user: UserDTO) {
+        
         if (!id) {
             throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
         }
-        return this.service.update(id, user);
+        
+        return await this.service.update(id, user);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
+    async remove(@Param('id') id: string) {
+        
         if (!id) {
             throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
         }
-        return this.service.remove(id);
+
+        return await this.service.remove(id);
     }
 }

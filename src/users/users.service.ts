@@ -1,7 +1,7 @@
+import { MongoError } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-// import { MongoExceptionFilter } from  'src/shared/exception/mongo-exception.filter'
 import { User, UserDocument } from './schemas/user.schemas';
 import * as bcrypt from 'bcrypt';
 
@@ -25,9 +25,9 @@ export class UsersService {
     async findByEmail(email: string): Promise<User> {
         const user = await this.userModel.findOne({email}).exec()
         
-        // if (!user) {
-        //     throw new HttpException('User Not found', HttpStatus.NOT_FOUND);
-        // }
+        if (!user) {
+            throw new MongoError('User not found');
+        }
 
         return user;
     }
@@ -35,12 +35,13 @@ export class UsersService {
     async findById(id: string) {
         
         const user = await this.userModel.findOne({_id:id}).exec()
-        // if (!user) {
-        //     console.log('exception')
-        //     throw new MongoExceptionFilter()
-        // }
+
+        if (!user) {
+            throw new MongoError('User not found')
+        }
 
         const {name, email} = user
+
         return {id, name, email};
     }
 
@@ -48,9 +49,9 @@ export class UsersService {
 
         const userUpdated = await this.userModel.findOneAndUpdate({_id: id}, user,{new: true}).exec();
 
-        // if (!userUpdated) {
-        //     throw new HttpException('User Not found', HttpStatus.NOT_FOUND);
-        // }
+        if (!userUpdated) {
+            throw new MongoError('User Not found');
+        }
 
         return userUpdated;
     }
@@ -59,9 +60,9 @@ export class UsersService {
 
         const userDeleted = await this.userModel.findOneAndRemove({_id: id}).exec();
 
-        // if (!userDeleted) {
-        //     throw new HttpException('User Not found', HttpStatus.NOT_FOUND);
-        // }
+        if (!userDeleted) {
+            throw new MongoError('User Not found');
+        }
 
         return id;
     }
