@@ -22,51 +22,50 @@ export class ImagesController {
     constructor(private service: ImagesService) {
     }
     @Get(':id')
-    get(@Param('id') id: string,) {
+    async get(@Param('id') id: string) {
 
         if (!id) {
             throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
         }
 
-        return this.service.findById(id);
+        return await this.service.findById(id);
     }
 
     @Get('album/:id')
-    getAllByAlbum(@Param('id') id:string, @Query('page') page: number) {
+    async getAllByAlbum(@Param('id') id:string, @Query('page') page: number) {
 
         if (!id) {
             throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
         }
 
-        return this.service.findAllByAlbum(id, page);
+        return await this.service.findAllByAlbum(id, page);
     }
 
     @Post()
     @UseInterceptors(FileInterceptor('file'))
-    createOne(@Body() image: ImagesDTO, @UploadedFile() file: Express.Multer.File) {
+    async createOne(@Body() image: ImagesDTO, @UploadedFile() file: Express.Multer.File) {
         
         if(!file){
             throw new HttpException('Missing File', HttpStatus.FORBIDDEN);
         }
 
-        return this.service.create(image, file);
+        return await this.service.create(image, file);
     }
 
     @Post('upload')
     @UseInterceptors(FilesInterceptor('files'))
-    uploadFile(@Body() image: ImagesDTO, @UploadedFiles() files: Express.Multer.File[]) {
-        files.map(async(file:Express.Multer.File) => this.service.create(image, file))
-        return;
+    async uploadFile(@Body() image: ImagesDTO, @UploadedFiles() files: Express.Multer.File[]) {
+        return files.map(async(file:Express.Multer.File) => this.service.create(image, file))
     }
     
     @Put(':id')
-    update(@Param('id') id: string, @Body() image: ImagesDTO) {
+    async update(@Param('id') id: string, @Body() image: ImagesDTO) {
         
         if (!id) {
             throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
         }
 
-        return this.service.update(id, image);
+        return await this.service.update(id, image);
     }
 
     @Delete(':id')

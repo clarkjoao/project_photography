@@ -1,3 +1,4 @@
+import { MongoError } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -19,9 +20,9 @@ export class ImagesService {
 
         const album = await this.albunsService.findById(image.album);
 
-        // if(!album){
-        //     throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
-        // }
+        if(!album){
+            throw new MongoError('Album Not found');
+        }
 
         const newImage = await new this.imageModel(image).save();
 
@@ -40,9 +41,9 @@ export class ImagesService {
 
         const image = await this.imageModel.findOne({_id:id}).exec();
 
-        // if(!image){
-        //     throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
-        // }
+        if(!image){
+            throw new MongoError('Image Not found');
+        }
         return image
     }
 
@@ -64,9 +65,9 @@ export class ImagesService {
 
         const imageUpdated = await this.imageModel.findOneAndUpdate({_id: id}, image,{new: true}).exec();
 
-        // if (!imageUpdated) {
-        //     throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
-        // }
+        if (!imageUpdated) {
+            throw new MongoError('Image Not found');
+        }
         return imageUpdated;
     }
 
@@ -74,9 +75,9 @@ export class ImagesService {
 
         const imageDeleted = await this.imageModel.findOneAndRemove({_id: id}).exec();
 
-        // if (!imageDeleted) {
-        //     throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
-        // }
+        if (!imageDeleted) {
+            throw new MongoError('Image Not found');
+        }
 
         if(imageDeleted.link){
 

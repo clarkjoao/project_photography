@@ -1,3 +1,4 @@
+import { MongoError } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -34,9 +35,10 @@ export class AlbunsService {
     async findById(id: string) {
 
         const album = await this.albumModel.findOne({_id:id}).exec();
-        // if (!album) {
-        //     throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
-        // }
+
+        if (!album) {
+            throw new MongoError('Album Not found');
+        }
 
         return album;
     }
@@ -58,9 +60,9 @@ export class AlbunsService {
        
         const albumUpdated = await this.albumModel.findOneAndUpdate({_id: id}, album,{new: true}).exec();
 
-        // if (!albumUpdated) {
-        //     throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
-        // }
+        if (!albumUpdated) {
+            throw new MongoError('Album Not found');
+        }
 
         return albumUpdated;
     }
@@ -69,9 +71,9 @@ export class AlbunsService {
 
         const albumUpdated = await this.albumModel.findOneAndUpdate({_id: id}, {$inc:{ photoCounter }},{new: true}).exec();
 
-        // if (!albumUpdated) {
-        //     throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
-        // }
+        if (!albumUpdated) {
+            throw new MongoError('Album Not found');
+        }
 
         return albumUpdated;
     }
@@ -80,9 +82,9 @@ export class AlbunsService {
 
         const albumDeleted = await this.albumModel.findOneAndDelete({_id: id}).exec();
 
-        // if (!albumDeleted) {
-        //     throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
-        // }
+        if (!albumDeleted) {
+            throw new MongoError('Album Not found');
+        }
 
         const albumQuee: UploadQueeDTO = {
             albumID: albumDeleted.id,

@@ -21,43 +21,43 @@ export class AlbunsController {
     }
 
     @Get(':id')
-    get(@Param('id') id: string) {
+    async get(@Param('id') id: string) {
         
         if (!id) {
             throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
         }
 
-        return this.service.findById(id);
+        return await this.service.findById(id);
     }
     
     @Get()
-    getAll(@Query('page') page: number) {
-        return this.service.findAll(page);
+    async getAll(@Query('page') page: number) {
+        return await this.service.findAll(page);
     }
 
     @Post()
     @UseInterceptors(FileInterceptor('file'))
-    create(@Body() albuns: AlbunsDTO, @UploadedFile() file: Express.Multer.File) {
-        return this.service.create(albuns, file);
+    async create(@Body() albuns: AlbunsDTO, @UploadedFile() file: Express.Multer.File) {
+        return await this.service.create(albuns, file);
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() albuns: AlbunsDTO) {
+    async update(@Param('id') id: string, @Body() albuns: AlbunsDTO) {
 
         if (!id) {
             throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
         }
         
-        return this.service.update(id, albuns);
+        return await this.service.update(id, albuns);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string,) {
+    async remove(@Param('id') id: string,) {
 
         if (!id) {
             throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
         }
 
-        return this.service.remove(id);
+        return await this.service.remove(id);
     }
 }
