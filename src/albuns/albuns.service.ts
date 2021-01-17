@@ -1,4 +1,5 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { MongoError } from 'mongodb';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Queue } from 'bull';
@@ -15,33 +16,28 @@ export class AlbunsService {
     ) {}
     async create(album: AlbunsDTO, file: Express.Multer.File) {
 
-        if(!file){
-            throw new HttpException('Missing File', HttpStatus.FORBIDDEN);
-        }
-
         const { id } = await new this.albumModel(album).save();
 
-        const imageQuee: UploadQueeDTO = {
-            albumID: id,
-            imageID: id,
-            file,
-        }
+        if(file){
 
-        await this.albunsQueue.add('create', imageQuee)
+            const imageQuee: UploadQueeDTO = {
+                albumID: id,
+                imageID: id,
+                file,
+            }
+    
+            await this.albunsQueue.add('create', imageQuee)
+        }
 
         return id;
     }
 
     async findById(id: string) {
-        
-        if (!id) {
-            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
-        }
 
         const album = await this.albumModel.findOne({_id:id}).exec();
 
         if (!album) {
-            throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
+            throw new MongoError('Album Not found');
         }
 
         return album;
@@ -61,15 +57,11 @@ export class AlbunsService {
     }
 
     async update(id:string ,album: AlbunsDTO) {
-        
-        if (!id) {
-            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
-        }
-
+       
         const albumUpdated = await this.albumModel.findOneAndUpdate({_id: id}, album,{new: true}).exec();
 
         if (!albumUpdated) {
-            throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
+            throw new MongoError('Album Not found');
         }
 
         return albumUpdated;
@@ -77,31 +69,22 @@ export class AlbunsService {
 
     async incrasePhotoCount(id: string, photoCounter:number = 1){
 
-        if (!id) {
-            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
-        }
-
         const albumUpdated = await this.albumModel.findOneAndUpdate({_id: id}, {$inc:{ photoCounter }},{new: true}).exec();
 
         if (!albumUpdated) {
-            throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
+            throw new MongoError('Album Not found');
         }
 
         return albumUpdated;
     }
 
     async remove(id: string) {
-        
-        if (!id) {
-            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
-        }
 
         const albumDeleted = await this.albumModel.findOneAndDelete({_id: id}).exec();
 
         if (!albumDeleted) {
-            throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
+            throw new MongoError('Album Not found');
         }
-
 
         const albumQuee: UploadQueeDTO = {
             albumID: albumDeleted.id,

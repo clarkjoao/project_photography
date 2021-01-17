@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { 
+    Body, 
+    Controller, 
+    Delete, 
+    Get, 
+    Param, 
+    Post,
+    Put,
+    HttpException, 
+    HttpStatus 
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserDTO } from './dtos/user.dto'
 
@@ -8,22 +18,37 @@ export class UsersController {
     }
     
     @Get(':id')
-    get(@Param('id') id: string) {
-        return this.service.findById(id);
+    async get(@Param('id') id: string): Promise<UserDTO> {
+
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
+        return await this.service.findById(id);
     }
     
     @Post()
-    create(@Body() user: UserDTO) {
-        return this.service.create(user);
+    async create(@Body() user: UserDTO) {
+        return await this.service.create(user);
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() user: UserDTO) {
-        return this.service.update(id, user);
+    async update(@Param('id') id: string, @Body() user: UserDTO) {
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+        
+        return await this.service.update(id, user);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.service.remove(id);
+    async remove(@Param('id') id: string) {
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
+        return await this.service.remove(id);
     }
 }

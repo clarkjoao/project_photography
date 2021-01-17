@@ -1,4 +1,5 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { MongoError } from 'mongodb';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schemas';
@@ -25,7 +26,7 @@ export class UsersService {
         const user = await this.userModel.findOne({email}).exec()
         
         if (!user) {
-            throw new HttpException('User Not found', HttpStatus.NOT_FOUND);
+            throw new MongoError('User not found');
         }
 
         return user;
@@ -33,29 +34,23 @@ export class UsersService {
 
     async findById(id: string) {
         
-        if (!id) {
-            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
-        }
-
         const user = await this.userModel.findOne({_id:id}).exec()
-        
+
         if (!user) {
-            throw new HttpException('User Not found', HttpStatus.NOT_FOUND);
+            throw new MongoError('User not found')
         }
 
         const {name, email} = user
+
         return {id, name, email};
     }
 
     async update(id: string, user: UserDTO) {
-        if (!id) {
-            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
-        }
 
         const userUpdated = await this.userModel.findOneAndUpdate({_id: id}, user,{new: true}).exec();
 
         if (!userUpdated) {
-            throw new HttpException('User Not found', HttpStatus.NOT_FOUND);
+            throw new MongoError('User Not found');
         }
 
         return userUpdated;
@@ -63,14 +58,10 @@ export class UsersService {
 
     async remove(id: string) {
 
-        if (!id) {
-            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
-        }
-
         const userDeleted = await this.userModel.findOneAndRemove({_id: id}).exec();
 
         if (!userDeleted) {
-            throw new HttpException('User Not found', HttpStatus.NOT_FOUND);
+            throw new MongoError('User Not found');
         }
 
         return id;

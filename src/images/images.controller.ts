@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Query, Post, Put, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { 
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Query,
+    Post,
+    Put,
+    UploadedFile,
+    UploadedFiles,
+    UseInterceptors,
+    HttpException, 
+    HttpStatus,
+} from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
 import { ImagesService } from './images.service';
 import { ImagesDTO } from './dtos/images.dto'
@@ -8,35 +22,59 @@ export class ImagesController {
     constructor(private service: ImagesService) {
     }
     @Get(':id')
-    get(@Param('id') id: string,) {
-        return this.service.findById(id);
+    async get(@Param('id') id: string) {
+
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
+        return await this.service.findById(id);
     }
 
     @Get('album/:id')
-    getAllByAlbum(@Param('id') id:string, @Query('page') page: number) {
-        return this.service.findAllByAlbum(id, page);
+    async getAllByAlbum(@Param('id') id:string, @Query('page') page: number) {
+
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
+        return await this.service.findAllByAlbum(id, page);
     }
 
     @Post()
     @UseInterceptors(FileInterceptor('file'))
-    createOne(@Body() image: ImagesDTO, @UploadedFile() file: Express.Multer.File) {
-        return this.service.create(image, file);
+    async createOne(@Body() image: ImagesDTO, @UploadedFile() file: Express.Multer.File) {
+        
+        if(!file){
+            throw new HttpException('Missing File', HttpStatus.FORBIDDEN);
+        }
+
+        return await this.service.create(image, file);
     }
 
     @Post('upload')
     @UseInterceptors(FilesInterceptor('files'))
-    uploadFile(@Body() image: ImagesDTO, @UploadedFiles() files: Express.Multer.File[]) {
-        files.map(async(file:Express.Multer.File) => this.service.create(image, file))
-        return;
+    async uploadFile(@Body() image: ImagesDTO, @UploadedFiles() files: Express.Multer.File[]) {
+        return files.map(async(file:Express.Multer.File) => this.service.create(image, file))
     }
     
     @Put(':id')
-    update(@Param('id') id: string, @Body() image: ImagesDTO) {
-        return this.service.update(id, image);
+    async update(@Param('id') id: string, @Body() image: ImagesDTO) {
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
+        return await this.service.update(id, image);
     }
 
     @Delete(':id')
     remove(@Param('id') id: string) {
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
         return this.service.remove(id);
     }
     
