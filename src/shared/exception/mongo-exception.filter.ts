@@ -7,7 +7,7 @@ export class MongoExceptionFilter implements ExceptionFilter {
     const response = host.switchToHttp().getResponse();
     const request = host.switchToHttp().getRequest<Request>();
     let message;
-    
+    console.log(response, request)
      switch (exception.code) {
         case 11000:
             message =  'User already exists.'

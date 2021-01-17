@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Image, ImageDocument } from './schemas/image.schemas';
@@ -16,16 +16,12 @@ export class ImagesService {
     private albunsService: AlbunsService,
     ) {}
     async create(image: ImagesDTO, file: Express.Multer.File) {
-        
-        if(!file){
-            throw new HttpException('Missing File', HttpStatus.FORBIDDEN);
-        }
 
         const album = await this.albunsService.findById(image.album);
 
-        if(!album){
-            throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
-        }
+        // if(!album){
+        //     throw new HttpException('Album Not found', HttpStatus.NOT_FOUND);
+        // }
 
         const newImage = await new this.imageModel(image).save();
 
@@ -41,24 +37,16 @@ export class ImagesService {
     }
 
     async findById(id: string){
-        
-        if (!id) {
-            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
-        }
 
         const image = await this.imageModel.findOne({_id:id}).exec();
 
-        if(!image){
-            throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
-        }
+        // if(!image){
+        //     throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
+        // }
         return image
     }
 
     async findAllByAlbum(id: string, page: number = 0){
-        
-        if (!id) {
-            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
-        }
 
         const resultsPerPage = parseInt(process.env.QNT_BY_PAGE)||25;
 
@@ -73,30 +61,22 @@ export class ImagesService {
     }
 
     async update(id: string, image: ImagesDTO) {
-        
-        if (!id) {
-            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
-        }
 
         const imageUpdated = await this.imageModel.findOneAndUpdate({_id: id}, image,{new: true}).exec();
 
-        if (!imageUpdated) {
-            throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
-        }
+        // if (!imageUpdated) {
+        //     throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
+        // }
         return imageUpdated;
     }
 
     async remove(id: string) {
-        
-        if (!id) {
-            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
-        }
 
         const imageDeleted = await this.imageModel.findOneAndRemove({_id: id}).exec();
 
-        if (!imageDeleted) {
-            throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
-        }
+        // if (!imageDeleted) {
+        //     throw new HttpException('Image Not found', HttpStatus.NOT_FOUND);
+        // }
 
         if(imageDeleted.link){
 

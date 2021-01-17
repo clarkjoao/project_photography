@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Query, Post, Put, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { 
+    Body, 
+    Controller,
+    Delete, 
+    Get,
+    Param,
+    Query,
+    Post,
+    Put,
+    UploadedFile,
+    UseInterceptors,
+    HttpException,
+    HttpStatus } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { AlbunsService } from './albuns.service';
 import { AlbunsDTO } from './dtos/albuns.dto'
@@ -10,6 +22,11 @@ export class AlbunsController {
 
     @Get(':id')
     get(@Param('id') id: string) {
+        
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
         return this.service.findById(id);
     }
     
@@ -26,11 +43,21 @@ export class AlbunsController {
 
     @Put(':id')
     update(@Param('id') id: string, @Body() albuns: AlbunsDTO) {
+
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+        
         return this.service.update(id, albuns);
     }
 
     @Delete(':id')
     remove(@Param('id') id: string,) {
+
+        if (!id) {
+            throw new HttpException('Missing ID', HttpStatus.BAD_REQUEST);
+        }
+
         return this.service.remove(id);
     }
 }
