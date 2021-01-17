@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MulterModule } from '@nestjs/platform-express';
 import { BullModule } from '@nestjs/bull';
@@ -21,9 +21,10 @@ import { AlbunsModule } from 'src/albuns/albuns.module';
       }
     }),
     ImagesConvertService,
-    AlbunsModule
+    forwardRef(()=> AlbunsModule)
   ],
   controllers: [ImagesController],
-  providers: [ImagesService, ImagesConsumer, ImagesConvertService]
+  providers: [ImagesService, ImagesConsumer, ImagesConvertService],
+  exports:[ImagesService]
 })
 export class ImagesModule {}

@@ -55,7 +55,7 @@ export class ImagesController {
     @Post('upload')
     @UseInterceptors(FilesInterceptor('files'))
     async uploadFile(@Body() image: ImagesDTO, @UploadedFiles() files: Express.Multer.File[]) {
-        return files.map(async(file:Express.Multer.File) => this.service.create(image, file))
+        return files.map(async(file:Express.Multer.File) => await this.service.create(image, file))
     }
     
     @Put(':id')

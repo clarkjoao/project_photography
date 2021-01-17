@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { ImagesModule } from './../images/images.module';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BullModule } from '@nestjs/bull';
 
@@ -20,7 +21,8 @@ import { ImagesConvertService } from 'src/shared/services/images-convert/images-
         duration: parseInt(process.env.QUEE_TIMEOUT)|| 10000,
       }
     }),
-    ImagesConvertService
+    ImagesConvertService,
+    forwardRef(()=> ImagesModule)
   ],
   controllers: [AlbunsController],
   providers: [AlbunsService, AlbunsConsumer, ImagesConvertService],

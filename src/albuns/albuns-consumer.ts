@@ -1,3 +1,4 @@
+import { ImagesService } from './../images/images.service';
 import { Processor,OnQueueActive, OnQueueCompleted, Process, OnQueueProgress, OnQueueFailed } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
@@ -9,6 +10,7 @@ import { AlbunsDTO } from './dtos/albuns.dto'
 export class AlbunsConsumer {
   constructor(
     private imageConvertService: ImagesConvertService,
+    private imagesService: ImagesService,
     private albunsService: AlbunsService
   ){}
   private readonly logger = new Logger(AlbunsConsumer.name);
@@ -35,7 +37,10 @@ export class AlbunsConsumer {
   @Process('delete')
   async transcode(job: Job) 
   { 
-    const data = await this.imageConvertService.emptyFolders(job.data).then(()=> data).catch(()=> job.isFailed())
+    // Fix-me: Refatorar processo de delete album
+    // atualmente é primeiro deletado o album, depois as imagens, é necessario inverter o processo
+    await this.imageConvertService.emptyFolders(job.data).then().catch(()=> job.isFailed())
+    await this.imagesService.removeByAlbum(job.data.albumID);
     return job.isCompleted();
   }
 

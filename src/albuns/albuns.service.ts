@@ -79,7 +79,8 @@ export class AlbunsService {
     }
 
     async remove(id: string) {
-
+        // Fix-me: Refatorar processo de delete album
+        // atualmente é primeiro deletado o album, depois as imagens, é necessario inverter o processo
         const albumDeleted = await this.albumModel.findOneAndDelete({_id: id}).exec();
 
         if (!albumDeleted) {

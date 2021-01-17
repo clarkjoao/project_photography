@@ -91,4 +91,10 @@ export class ImagesService {
         
         return id;
     }
+
+    async removeByAlbum(id: string) {
+        const imagesDeleted = await this.imageModel.find({album: id}).remove().exec();
+
+        return imagesDeleted;
+    }
 }
