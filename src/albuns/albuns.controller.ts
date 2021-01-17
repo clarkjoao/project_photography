@@ -10,7 +10,9 @@ import {
     UploadedFile,
     UseInterceptors,
     HttpException,
-    HttpStatus } from '@nestjs/common'
+    HttpStatus,
+    UseGuards } from '@nestjs/common'
+import { JwtAuthGuard } from './../auth/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express'
 import { AlbunsService } from './albuns.service';
 import { AlbunsDTO } from './dtos/albuns.dto'
@@ -36,12 +38,14 @@ export class AlbunsController {
     }
 
     @Post()
+    @UseGuards(JwtAuthGuard)
     @UseInterceptors(FileInterceptor('file'))
     async create(@Body() albuns: AlbunsDTO, @UploadedFile() file: Express.Multer.File) {
         return await this.service.create(albuns, file);
     }
 
     @Put(':id')
+    @UseGuards(JwtAuthGuard)
     async update(@Param('id') id: string, @Body() albuns: AlbunsDTO) {
 
         if (!id) {
@@ -52,6 +56,7 @@ export class AlbunsController {
     }
 
     @Delete(':id')
+    @UseGuards(JwtAuthGuard)
     async remove(@Param('id') id: string,) {
 
         if (!id) {

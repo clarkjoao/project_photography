@@ -12,7 +12,9 @@ import {
     UseInterceptors,
     HttpException, 
     HttpStatus,
+    UseGuards
 } from '@nestjs/common';
+import { JwtAuthGuard } from './../auth/jwt-auth.guard';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
 import { ImagesService } from './images.service';
 import { ImagesDTO } from './dtos/images.dto'
@@ -42,6 +44,7 @@ export class ImagesController {
     }
 
     @Post()
+    @UseGuards(JwtAuthGuard)
     @UseInterceptors(FileInterceptor('file'))
     async createOne(@Body() image: ImagesDTO, @UploadedFile() file: Express.Multer.File) {
         
@@ -53,12 +56,14 @@ export class ImagesController {
     }
 
     @Post('upload')
+    @UseGuards(JwtAuthGuard)
     @UseInterceptors(FilesInterceptor('files'))
     async uploadFile(@Body() image: ImagesDTO, @UploadedFiles() files: Express.Multer.File[]) {
         return files.map(async(file:Express.Multer.File) => await this.service.create(image, file))
     }
     
     @Put(':id')
+    @UseGuards(JwtAuthGuard)
     async update(@Param('id') id: string, @Body() image: ImagesDTO) {
         
         if (!id) {
@@ -69,6 +74,7 @@ export class ImagesController {
     }
 
     @Delete(':id')
+    @UseGuards(JwtAuthGuard)
     remove(@Param('id') id: string) {
         
         if (!id) {
