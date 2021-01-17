@@ -11,15 +11,14 @@ import { ImagesConvertService } from './shared/services/images-convert/images-co
 import { AlbunsModule } from './albuns/albuns.module';
 
 import { AuthModule } from './auth/auth.module';
-
 @Module({
   imports: [
   ConfigModule.forRoot(),
-  MongooseModule.forRoot('mongodb+srv://db_user:ZGgPHF5gWxN6lKBW@anaphotos.uonq9.mongodb.net/db_user?retryWrites=true&w=majority'),
+  MongooseModule.forRoot(`${process.env.MONGODB_URI}`),
   BullModule.forRoot({
     redis: {
-      host: 'localhost',
-      port: 6379,
+      host: `${process.env.REDIS_HOST}`,
+      port: parseInt(process.env.REDIS_PORT),
     },
   }),
   UsersModule, 
