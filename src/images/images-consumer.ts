@@ -35,8 +35,8 @@ export class ImagesConsumer {
       isPublished: true
     }
     try{
-      this.imagesService.update(job.data.imageID, image)
-      this.albunsService.incrasePhotoCount(job.data.albumID, 1)
+      await this.imagesService.update(job.data.imageID, image)
+      await this.albunsService.incrasePhotoCount(job.data.albumID, 1)
     }catch(e){
       job.isFailed();
     }

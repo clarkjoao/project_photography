@@ -25,7 +25,7 @@ export class AlbunsConsumer {
       link: url,
     }
     try{
-      this.albunsService.update(job.data.albumID, album)
+      await this.albunsService.update(job.data.albumID, album)
     }catch(e){
       job.isFailed();
     }
